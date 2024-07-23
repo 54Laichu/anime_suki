@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Anime Suki{% endblock%}</title>
+  <link href="{{ url_for('static', path='css/styles.css') }}" rel="stylesheet">
+  <link href="{{ url_for('static', path='css/index.css') }}" rel="stylesheet">
+</head>
+<body>
+  <nav>
+    <div class="nav-bar">
+      <div>Anime Suki</div>
+    </div>
+  </nav>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+  <footer>
+    <div>
+      &copy; 2024 Anime Suki
+    </div>
+  </footer>
+</body>
+</html>
