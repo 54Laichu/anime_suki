@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const imgContainer = document.querySelector('#img-container');
+
   document.querySelector('#uploadButton').addEventListener('click', async function(event) {
     event.preventDefault();
 
@@ -22,18 +24,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (response.ok) {
         const result = await response.json();
-        const resultDiv = document.querySelector('#result');
 
         const img = document.createElement('img');
         img.src = result.url;
+        img.className = "card-img";
         img.alt = 'Uploaded Image';
 
         const text = document.createElement('p');
+        text.className = "card-txt";
         text.textContent = result.note;
 
-        resultDiv.innerHTML = '';
-        resultDiv.appendChild(img);
-        resultDiv.appendChild(text);
+        let card = document.createElement('div');
+        card.className = "card";
+        card.appendChild(img);
+        card.appendChild(text);
+
+        imgContainer.appendChild(card);
       } else {
         console.error('Upload failed');
       }
@@ -41,8 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error('Error:', error);
     }
   });
-
-  const imgContainer = document.querySelector('#img-container');
 
   fetch('/api/v1/images')
     .then(response => {

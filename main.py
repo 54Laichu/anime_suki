@@ -3,6 +3,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from app.controllers import image_controller
+import os
 
 app = FastAPI(
     title="Anime Suki",
@@ -12,7 +13,10 @@ app = FastAPI(
     version="1.0.0"
 )
 app.mount("/static", StaticFiles(directory="./app/static"), name="static")
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+if os.getenv('ENV') == 'development':
+  app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
 templates = Jinja2Templates(directory="./app/templates")
 
 @app.get("/", include_in_schema=False, response_class=HTMLResponse)

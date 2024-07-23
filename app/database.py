@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import mysql.connector
 from mysql.connector import pooling
-from contextlib import contextmanager
+from contextlib import contextmanager # https://book.pythontips.com/en/latest/context_managers.html
 
 load_dotenv()
 
