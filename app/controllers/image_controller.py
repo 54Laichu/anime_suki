@@ -13,6 +13,7 @@ AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_REGION = os.getenv('AWS_REGION')
 S3_BUCKET_NAME = os.getenv('S3_BUCKET_NAME')
+CLOUDFRONT_DOMAIN = os.getenv('CLOUDFRONT_DOMAIN')
 
 s3_client = boto3.client(
     's3',
@@ -45,18 +46,17 @@ async def get_images(db: Generator = Depends(get_db)):
 async def post_image(note: str = Form(...), img: UploadFile = File(...), db: Generator = Depends(get_db)):
     try:
         if os.getenv('ENV') == 'production':
-            # 將文件上傳到 S3
+            # 如果正式環境，上傳到 S3
             s3_file_key = f"images/{img.filename}"
             s3_client.upload_fileobj(img.file, S3_BUCKET_NAME, s3_file_key)
-            s3_url = f"https://{S3_BUCKET_NAME}.s3.amazonaws.com/{s3_file_key}"
+            s3_url = f"https://{CLOUDFRONT_DOMAIN}/{s3_file_key}"
         else:
-            # 將文件保存到本地
+            # 如果測試環境，上傳本機
             file_location = os.path.join(UPLOAD_DIR, img.filename)
             with open(file_location, "wb+") as file_object:
                 shutil.copyfileobj(img.file, file_object)
             s3_url = f"/uploads/{img.filename}"
 
-        # 將數據寫入 RDS
         with db as connection:
             cursor = connection.cursor()
             cursor.execute('''
