@@ -5,9 +5,13 @@ from typing import Generator
 import os
 import shutil
 import boto3
+from datetime import datetime
+
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+now = datetime.now()
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
@@ -45,17 +49,18 @@ async def get_images(db: Generator = Depends(get_db)):
 @router.post("/image")
 async def post_image(note: str = Form(...), img: UploadFile = File(...), db: Generator = Depends(get_db)):
     try:
+        new_filename = now.strftime('%y%m%d%H%M%S') + img.filename
         if os.getenv('ENV') == 'production':
             # 如果正式環境，上傳到 S3
-            s3_file_key = f"images/{img.filename}"
+            s3_file_key = f"images/{new_filename}"
             s3_client.upload_fileobj(img.file, S3_BUCKET_NAME, s3_file_key)
             s3_url = f"https://{CLOUDFRONT_DOMAIN}/{s3_file_key}"
         else:
             # 如果測試環境，上傳本機
-            file_location = os.path.join(UPLOAD_DIR, img.filename)
+            file_location = os.path.join(UPLOAD_DIR, new_filename)
             with open(file_location, "wb+") as file_object:
                 shutil.copyfileobj(img.file, file_object)
-            s3_url = f"/uploads/{img.filename}"
+            s3_url = f"/uploads/{new_filename}"
 
         with db as connection:
             cursor = connection.cursor()
