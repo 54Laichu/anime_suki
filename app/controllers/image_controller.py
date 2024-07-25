@@ -11,8 +11,6 @@ from datetime import datetime
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-now = datetime.now()
-
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 AWS_REGION = os.getenv('AWS_REGION')
@@ -49,6 +47,7 @@ async def get_images(db: Generator = Depends(get_db)):
 @router.post("/image")
 async def post_image(note: str = Form(...), img: UploadFile = File(...), db: Generator = Depends(get_db)):
     try:
+        now = datetime.now()
         new_filename = now.strftime('%y%m%d%H%M%S') + img.filename
         if os.getenv('ENV') == 'production':
             # 如果正式環境，上傳到 S3
