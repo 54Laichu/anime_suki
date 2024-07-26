@@ -3,7 +3,6 @@ version: '3.8'
 services:
   web:
     build: .
-    command: uvicorn main:app --host 0.0.0.0 --port 8000
     ports:
       - 8000:8000
     env_file:
@@ -26,4 +25,6 @@ services:
     volumes:
       - ./nginx/cert:/etc/letsencrypt
       - ./nginx/webroot:/var/www/certbot
+    env_file:
+      - .env.production
     command: certonly --webroot --webroot-path=/var/www/certbot --email ${CERTBOT_EMAIL} --agree-tos --no-eff-email -d anime-suki.online
