@@ -20,13 +20,11 @@ services:
       - ./nginx/webroot:/var/www/certbot
     depends_on:
       - web
+
   certbot:
     image: certbot/certbot
     volumes:
       - ./nginx/cert:/etc/letsencrypt
       - ./nginx/webroot:/var/www/certbot
-    env_file:
-      - .env.production
-    command: sh -c "env && certonly --webroot --webroot-path=/var/www/certbot --email ${CERTBOT_EMAIL} --agree-tos --no-eff-email -d anime-suki.online"
-    environment:
-      - CERTBOT_EMAIL=your-actual-email@example.com
+    command: certonly --webroot --webroot-path=/var/www/certbot --force-renewal --email {CERTBOT_EMAIL} --agree-tos --no-eff-email -d anime-suki.online
+    # need to change CERTBOT_EMAIL on EC2
