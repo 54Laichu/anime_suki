@@ -3,28 +3,8 @@ version: '3.8'
 services:
   web:
     build: .
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
     ports:
       - "8000:8000"
     env_file:
       - .env.production
-
-  nginx:
-    restart: always
-    image: nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/cert:/etc/letsencrypt
-      - ./nginx/webroot:/var/www/certbot
-    depends_on:
-      - web
-
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - ./nginx/cert:/etc/letsencrypt
-      - ./nginx/webroot:/var/www/certbot
-    command: certonly --webroot --webroot-path=/var/www/certbot --force-renewal --email {CERTBOT_EMAIL} --agree-tos --no-eff-email -d anime-suki.online
-    # need to change CERTBOT_EMAIL on EC2
